@@ -1,0 +1,2 @@
+Mía
+Saccharum officinarum là một loài thực vật có hoa trong họ Hòa thảo. Loài này được L. miêu tả khoa học đầu tiên năm 1753. . Loài này có nguồn gốc ở New Guinea, Người Hồi giáo mang nó đến Tây Ban Nha đương đại (Andalusia, giữa Málaga và Motril) là nơi duy nhất ở châu Âu nơi nó phát triển. Nó đến Tân thế giới với người Tây Ban Nha và hiện đang được trồng ở các nước nhiệt đới và cận nhiệt đới trên toàn thế giới để sản xuất đường ăn và các sản phẩm khác.

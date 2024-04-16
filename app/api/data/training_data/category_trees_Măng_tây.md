@@ -1,0 +1,2 @@
+Măng tây
+Chi Măng tây (danh pháp khoa học: Asparagus) là một chi thực vật thuộc Họ Măng tây (Asparagaceae), và phân họ cùng tên (Asparagoideae). Chi này bao gồm 300 loài, phần lớn trong đó là các cây thường xanh lâu năm, mọc từ tầng thảm tươi như các loài dây leo hay cây bụi. Trong chi này, loài Asparagus officinalis hay còn gọi là măng tây là loài thông dụng nhất, là một món ăn phổ biến trong ẩm thực nhiều nước. Những loài cây khác trong chi này được trồng làm cảnh.

@@ -1,0 +1,2 @@
+Thiên tuế
+Thiên tuế hay tuế lược (danh pháp hai phần: Cycas pectinata là loài thực vật phân bố ở đông bắc Ấn Độ, Nepal, Bhutan, bắc Myanma, Hoa Nam, bắc Thái Lan, Lào và Việt Nam. Đây là loài thứ tư của chi Cycasđược đặt tên khoa học với mô tả lần đầu năm 1826. Thiên tuế cao đến 40 foot (12 m) với tán rộng.

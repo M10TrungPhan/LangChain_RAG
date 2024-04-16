@@ -1,0 +1,2 @@
+Thốt nốt
+Thốt nốt hay cọ đường (danh pháp hai phần: Borassus flabellifer) là loài thực vật thuộc họ Cau, bản địa của Nam Á và Đông Nam Á, phân bố từ Indonesia đến Pakistan. Tuy nhiên, vùng Tây Song Bản Nạp và Cảnh Hồng, Vân Nam, Trung Quốc cũng trồng loại cây này.

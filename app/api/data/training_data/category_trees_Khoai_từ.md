@@ -1,0 +1,2 @@
+Khoai từ
+Khoai từ hay còn gọi là củ từ (tên Hán Việt: thổ noãn, thổ vu, danh pháp hai phần: Dioscorea esculenta), là một dạng khoai thuộc họ Củ nâu Dioscoreaceae khoai từ gồm có các dạng là khoai từ (củ từ), củ từ lông (có loại ít hoặc nhiều lông). Ở Việt Nam, loại có gai (var. spinosa) phân bố ở Phú Quốc, loại không gai (var. fasiculata) phân bố rộng rãi, ngoài ra còn có củ từ nước (Dioscorea Pierrel) mọc ở các tỉnh miền Đông Nam Bộ. Khoai từ thường dùng làm lương thực, thực phẩm và nó còn là một vị thuốc với nhiều công dụng.

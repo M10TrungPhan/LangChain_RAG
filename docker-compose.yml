@@ -1,0 +1,79 @@
+version: '3.9'
+services:
+
+# -------------------
+# API service for LLM
+# -------------------
+  api:
+    user: "${DOCKER_USER}"
+    build:
+      context: ./app/api
+    restart: always
+    container_name: rag_api
+    env_file:
+      - .env
+    ports:
+      - 8888:8888
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://api:8888/health"]
+      interval: 15s
+      retries: 5
+    depends_on:
+      - db
+    networks:
+      - rag-network
+    volumes:
+      # - ./app/scripts/wait-for-it.sh:/app/api/wait-for-it.sh
+      - ./app/api:/app/api
+
+
+# -------------------------
+# Postgres database service
+# -------------------------
+  db:
+    user: "${DOCKER_USER}"
+    build:
+      context: ./app/db
+    container_name: rag_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - ./mnt/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 5
+    networks:
+      - rag-network
+
+
+# --------------------------------
+# PgAdmin database browser service
+# --------------------------------
+  pgadmin:
+    user: "${DOCKER_USER}"
+    container_name: rag_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - ./mnt/pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - rag-network
+
+
+networks:
+  rag-network:
+    driver: bridge

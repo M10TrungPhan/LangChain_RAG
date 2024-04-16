@@ -1,0 +1,2 @@
+Trắc bá diệp
+Trắc bách hay trắc bá, trắc bách diệp, trắc bá diệp, bá tử nhân, bách tử nhân, bách thật, bá thực, trắc bá tử nhân, bách thử nhân, cúc hoa, bá thực, thuộc bài (tên khoa học: Platycladus orientalis) là một loài thực vật hạt trần trong họ Cupressaceae. Loài này được L. Franco mô tả khoa học đầu tiên năm 1949. Lá và nhân của loài này được dùng trong Đông y và gọi là trắc bá/bách diệp và bá tử nhân.

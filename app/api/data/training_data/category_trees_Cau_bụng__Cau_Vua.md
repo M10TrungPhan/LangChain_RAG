@@ -1,0 +1,2 @@
+Cau bụng, Cau Vua
+Cau vua, tên gọi khác cau bụng, danh pháp khoa học Roystonea regia, là loài thực vật có hoa thuộc họ Arecaceae. Loài này được Carl Sigismund Kunth mô tả khoa học đầu tiên năm 1816 với danh pháp Oreodoxa regia. Năm 1900, Orator Fuller Cook chuyển nó sang chi Roystonea.

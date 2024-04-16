@@ -1,0 +1,2 @@
+Lẻ bạn, sò huyết, bang hoa
+Cây sò huyết (hay sò tím, sắc màu, lẻ bạn, bạng hoa) là một loài thực vật có hoa trong họ Thài lài, danh pháp khoa học là Tradescantia spathacea hoặc Tradescantia discolor. Loài này được Sw. miêu tả khoa học đầu tiên năm 1788. Cây có tác dụng làm cảnh và thuốc trong y học.

@@ -1,0 +1,2 @@
+Chuối rẽ quạt
+Chuối rẻ quạt còn được gọi là cây chuối quạt hay chuối cọ (danh pháp hai phần: Ravenala madagascariensis) là một loài thực vật thuộc họ Thiên điểu (Strelitziaceae), đặc hữu của Madagascar. Tuy vậy nó không phải là chuối (họ Musaceae) và cũng không phải là cọ (họ Arecaceae), Chuối rẻ quạt là loài duy nhất của chi Ravenala.

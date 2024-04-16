@@ -1,0 +1,2 @@
+Kim châm, hoa hiên, huyên thảo
+Hoa huyên, thường được đọc trại là hoa hiên (danh pháp hai phần: Hemerocallis fulva, Orange Daylily) là một chi Hemerocallis trong họ Liliaceae (Liliaceae) trong phân loại học Cronquist cũ. Ngoài ra còn có tên gọi như vong ưu thảo, chanh huyên, tử huyên, nghi nam thảo, liệu sầu, lộc tiến, hoàng hoa thái. Cây này được trồng ở nhà sau phía bắc, nơi đàn bà ở nên ngày xưa mẹ được gọi là huyên đường. . Loài cây này nguồn gốc từ Trung Quốc, Siberia, Nhật Bản và Đông Nam Á, du nhập vào Đài Loan từ vùng Hoa Nam vào năm 1661.
