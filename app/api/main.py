@@ -542,6 +542,7 @@ def get_webhook(
         'session_id': meta['session_id'] if 'session_id' in meta else None
 
     }
+    return chat_session.response
 
     # -----------------------------------
     # Forward the webhook to Rasa webhook
