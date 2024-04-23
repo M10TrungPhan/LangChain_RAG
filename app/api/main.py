@@ -535,13 +535,13 @@ def get_webhook(
     # -----------------------------------------
     # Lets add the LLM response to the metadata
     # -----------------------------------------
-    webhook_data['message']['meta'] = {
-        'response': chat_session.response if chat_session.response else None,
-        'tags': meta['tags'] if 'tags' in meta else None,
-        'is_escalate': meta['is_escalate'] if 'is_escalate' in meta else False,
-        'session_id': meta['session_id'] if 'session_id' in meta else None
+    # webhook_data['message']['meta'] = {
+    #     'response': chat_session.response if chat_session.response else None,
+    #     'tags': meta['tags'] if 'tags' in meta else None,
+    #     'is_escalate': meta['is_escalate'] if 'is_escalate' in meta else False,
+    #     'session_id': meta['session_id'] if 'session_id' in meta else None
 
-    }
+    # }
     return chat_session.response
 
     # -----------------------------------
@@ -549,9 +549,6 @@ def get_webhook(
     # -----------------------------------
     webhook_data['message'] = json.dumps(webhook_data['message'])
     res = requests.post(rasa_webhook_url, data=json.dumps(webhook_data))
-    print(f"{rasa_webhook_url} 1111111111111111111111111111111111111111111111111111111111111111")
-    print(webhook_data)
-    print(f"{res.text} 2222222222222222222222222222222")
     logger.debug(f'[🤖 RasaGPT API webhook]\nPosting data: {json.dumps(webhook_data)}\n\n[🤖 RasaGPT API webhook]\nRasa webhook response: {res.text}')
 
     return {'status': 'ok'}

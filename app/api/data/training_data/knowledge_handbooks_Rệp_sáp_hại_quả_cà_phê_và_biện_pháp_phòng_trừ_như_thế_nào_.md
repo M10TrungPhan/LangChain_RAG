@@ -1,0 +1,4 @@
+Rệp sáp hại quả cà phê và biện pháp phòng trừ như thế nào? 
+* Khi rệp mới xuất hiện với tỷ lệ cành bị hại còn thấp, bà con có thể thực hiện việc cắt và đốt các cành bị rệp.
+* Bảo vệ các loài thiên địch như bọ rùa đỏ, bọ rùa nhỏ, bọ mắt vàng, nhện bắt mồi và ăn thịt côn trùng.
+* Trong trường hợp bị nặng, bà con có thể sử dụng một số loại thuốc hóa học có chứa các hoạt chất như sau: Profenofos (trong sản phẩm Selecron 500 EC); Cypermethrin + Profenofos (trong sản phẩm Polytrin P 440 EC); Imidacloprid (trong sản phẩm Admire 200 OD); Spirotetramat (trong sản phẩm Movento 150 OD); Dinotefuran (trong sản phẩm Cheer 20 WP), tuân thủ theo hướng dẫn sử dụng của nhà sản xuất. Khi phun thuốc, hãy đảm bảo phun đều và đặc biệt chú ý vào các chùm quả để đảm bảo rằng thuốc có thể tiếp xúc được với trứng và rệp non.

@@ -62,6 +62,7 @@ def sanitize_output(
     str_output: str
 ):
     # Let's sanitize the JSON
+    print(f"7777777777 {str_output}")
     res = str_output.replace("\n", '')
 
     # If the first character is "?", remove it. Ran into this issue for some reason.
@@ -74,8 +75,8 @@ def sanitize_output(
     except json.JSONDecodeError:
         raise ValueError(f'LLM response is not valid JSON: {res}')
 
-    if 'message' not in res or 'tags' not in res or 'is_escalate' not in res:
-        raise ValueError(f'LLM response is missing required fields: {res}')
+    # if 'message' not in res or 'tags' not in res or 'is_escalate' not in res:
+    #     raise ValueError(f'LLM response is missing required fields: {res}')
 
     logger.debug(f'Output: {res}')
     return res

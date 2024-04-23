@@ -144,9 +144,6 @@ def chat_query(
     # -----------------------
     arr_query, embeddings = get_embeddings(query_str)
 
-    print(f"3333333333333333 {arr_query}")
-    print(f"3333333333333333 {embeddings}")
-
     query_embeddings = embeddings[0]
 
     # ------------------------
@@ -161,11 +158,13 @@ def chat_query(
         distance_threshold=distance_threshold,
         session=session,
     )
-
+    list_doc = []
     if len(nodes) > 0:
         if (not project or not organization) and session:
             # get document from Node via session object:
             document = session.get(Node, nodes[0].id).document
+            if document not in list_doc:
+                list_doc.append(document)
             project = document.project
             organization = project.organization
 
@@ -175,7 +174,10 @@ def chat_query(
 
         # concatenate all nodes into a single string
         context_str = "\n\n".join([node.text for node in nodes])
-
+        # context_str = "\n".join(each_document.data.decode("utf-8") for each_document in list_doc)
+        # with open('E:/TrungPhanADVN/Code/LangChain_RAG/app/api/test_content_gpt.txt','w') as f:
+        #     f.write(context_str) 
+        print(f"888888888888888 {context_str}\n{list_doc}")
         # -------------------------------------------
         # Let's make sure we don't exceed token limit
         # -------------------------------------------
@@ -215,8 +217,15 @@ def chat_query(
                 prefix_messages=system_prompt,
             )
         )
-        tags = llm_response.get("tags", [])
-        is_escalate = llm_response.get("is_escalate", False)
+        # tags = llm_response.get("tags", [])
+        # is_escalate = llm_response.get("is_escalate", False)
+
+        # llm_response =            retrieve_llm_response(
+        #         user_prompt,
+        #         model=model,
+        #         max_output_tokens=max_output_tokens,
+        #         prefix_messages=system_prompt,
+        #     )
         response_message = llm_response.get("message", None)
     else:
         logger.info("🚫📝 No similar nodes found, returning default response")
@@ -322,9 +331,7 @@ def get_prompt_template(
         {
             "role": "system",
             "content": f"""[AGENT]:
-I am {agent} a very kind and enthusiastic customer support agent who loves to help customers. I am working on the behalf of "{organization}"
-
-Given the following document from "{organization}", I will answer the [USER] questions using only the [DOCUMENT] and following the [RULES].
+ I will answer the [USER] questions using only the [DOCUMENT] and following the [RULES].
 
 [DOCUMENT]:
 {context_str}
@@ -332,16 +339,17 @@ Given the following document from "{organization}", I will answer the [USER] que
 [RULES]:
 I will answer the user's questions using only the [DOCUMENT] provided. I will abide by the following rules:
 - I am a kind and helpful human, the best customer support agent in existence
+- I will answer all content  in [DOCUMENT]
 - I never lie or invent answers not explicitly provided in [DOCUMENT]
 - If I am unsure of the answer response or the answer is not explicitly contained in [DOCUMENT], I will say: "I apologize, I'm not sure how to help with that".
-- I always keep my answers short, relevant and concise.
+- I always keep my answers long, relevant and concise.
 - I will always respond in JSON format with the following keys: "message" my response to the user, "tags" an array of short labels categorizing user input, "is_escalate" a boolean, returning false if I am unsure and true if I do have a relevant answer
 """,
         }
     ]
 
     return (system_prompt, f"[USER]:\n{user_query}")
-
+# f"[USER]:\n{user_query}
 
 # ----------------------------
 # Get the count of tokens used
@@ -406,6 +414,8 @@ def retrieve_llm_response(
     max_output_tokens: Optional[int] = LLM_MAX_OUTPUT_TOKENS,
     prefix_messages: Optional[List[dict]] = None,
 ):
+    print(f"111111111111---{query_str}\n2222222222---{prefix_messages}")
+
     llm = OpenAI(
         temperature=temperature,
         model_name=model.model_name
@@ -413,6 +423,7 @@ def retrieve_llm_response(
         else LLM_MODELS.GPT_35_TURBO.model_name,
         max_tokens=max_output_tokens,
         prefix_messages=prefix_messages,
+        request_timeout=10,
     )
     try:
         result = llm(prompt=query_str)
@@ -438,13 +449,12 @@ def get_embeddings(
             chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         )
     else:
-        doc_splitter = CharacterTextSplitter(
+        doc_splitter = CharacterTextSplitter(separator='\r\n',
             chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         )
 
     # Returns an array of Documents
     split_documents = doc_splitter.split_documents(documents)
-    print(f"3333333333111111111111 {split_documents}")
     # Lets convert them into an array of strings for OpenAI
     arr_documents = [doc.page_content for doc in split_documents]
 
