@@ -1,2 +1,0 @@
-Huỳnh tinh
-Mì tinh hay dong củ, dong đao, dong ta, củ trút, bình tinh, hoàng tinh, huỳnh tinh (danh pháp hai phần: Maranta arundinacea) là một cây thuộc Họ Dong (Marantaceae). Loài này được Carl von Linné miêu tả khoa học đầu tiên năm 1753.

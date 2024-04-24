@@ -1,2 +1,0 @@
-Sâm đại hành, tỏi Lào, hành Lào
-Sâm đại hành hay còn gọi phong nhạn, tỏi đỏ, tỏi lào, hành lào (danh pháp hai phần: Eleutherine bulbosa) là một loài thực vật có hoa trong họ Diên vĩ. Loài này được (Mill.) Urb. miêu tả khoa học đầu tiên năm 1918.

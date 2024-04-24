@@ -1,2 +1,0 @@
-Đại tướng quân
-Náng hay đại tướng quân, chuối nước, tỏi voi (danh pháp hai phần: Crinum asiaticum) là một loài thực vật thuộc họ Náng (còn gọi là họ Loa kèn đỏ, Amaryllidaceae). Loài này có thể thấy ở Trung Quốc, Ấn Độ, Nhật Bản và Việt Nam.
