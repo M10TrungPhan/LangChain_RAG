@@ -14,10 +14,10 @@ services:
       - .env
     ports:
       - 8888:8888
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://api:8888/health"]
-      interval: 15s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://api:8888/health"]
+    #   interval: 15s
+    #   retries: 5
     depends_on:
       - db
     networks:
@@ -44,10 +44,10 @@ services:
       - ./mnt/db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "pg_isready", "-U", "postgres"]
+    #   interval: 5s
+    #   retries: 5
     networks:
       - rag-network
 

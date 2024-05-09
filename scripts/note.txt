@@ -1,0 +1,33 @@
+GENERATE EVALUATE DATASETS:
+- Test with 52 Documents
+- Use model to generate random 50 questions and its answer from 52 documents above
+- Choose the suitable questions from above.
+
+
+
+EVALUATE DEPEND ON:
+- Text splitting:
+  + recursive split tries to preserve even more of the document structure, by processing it tree-like way, 
+splitting first on the largest units (chapters) then recursively splitting on smaller units (paragraphs, sentences).
+  + Chunk size split
+  + Chunk overlap
+
+- Retriever embedding:
+  + Tune the chunking method: Size of the chunks. Method: split on different separators, use semantic chunking
+  + Change the embedding model.
+	text-embedding-ada-002 (from openai) (max length 1536)
+	phobert(base) (max length 256)
+	BARTpho (max length 1024)
+	
+- Reader -- LLM
+  + Switch reranking on/off
+  + Change  the reader model (change model generate the answer)
+	gpt-3.5-turbo
+	mistralai/Mixtral-8x7B-Instruct-v0.1
+
+Problem:
+- Rate limit on openai and hugging face. 
+- If use totally openai, each task has required 2 request to openai (1 for embedding question, 1 for generate answer)
+- text-embedding-ada-002 only has tokenizer
+- Evaluate by model is not good. Need human review again
+- Each model generated answer need to design prompt template to get high efficient.

@@ -21,7 +21,7 @@ env = os.getenv("ENV", None)
 if not env:
     # Check up to 2 levels up for .env-{env} file
     env_file = Path(__file__).parent.parent.parent / '.env'
-    logger.debug(f"Loading env file: {env_file}")
+    # logger.debug(f"Loading env file: {env_file}")
     if os.path.exists(env_file):
         load_dotenv(dotenv_path=env_file)
     else:
@@ -130,7 +130,7 @@ DISTANCE_STRATEGIES = [
 LLM_DEFAULT_DISTANCE_STRATEGY = DISTANCE_STRATEGY[
     os.getenv("LLM_DEFAULT_DISTANCE_STRATEGY", "COSINE")
 ]
-VECTOR_EMBEDDINGS_COUNT = 1536
+VECTOR_EMBEDDINGS_COUNT = os.getenv('VECTOR_EMBEDDINGS_COUNT',1024)
 PGVECTOR_ADD_INDEX = True if os.getenv("PGVECTOR_ADD_INDEX", False) else False
 # Model constants
 

@@ -11,3 +11,7 @@ venv/
 .env-prod
 .env-production
 __pycache__/
+scripts/evaluat*
+scripts/result_evaluate*
+scripts/models/
+app/api/models/

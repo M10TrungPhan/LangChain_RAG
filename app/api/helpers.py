@@ -351,7 +351,7 @@ def create_document_nodes(
     session: Optional[Session] = None,
 ):
     # Avoid circular imports
-    from llm import get_embeddings, get_token_count
+    from llm import get_embeddings, get_token_count, get_token_count_bert, get_embeddings_bert, get_embeddings_bartpho, get_token_count_bartpho
 
     project_uuid = str(project.uuid)
     document_uuid = str(document.uuid)
@@ -378,8 +378,9 @@ def create_document_nodes(
     )
 
     # lets get the embeddings
-    arr_documents, embeddings = get_embeddings(document_data)
-
+    # arr_documents, embeddings = get_embeddings(document_data)
+    # arr_documents, embeddings = get_embeddings_bert(document_data)
+    arr_documents, embeddings = get_embeddings_bartpho(document_data)
     # -------------------------------------------
     # Process the embeddings and save to database
     # -------------------------------------------
@@ -389,7 +390,8 @@ def create_document_nodes(
             document_id=document.id,
             embeddings=vec,
             text=doc,
-            token_count=get_token_count(doc),
+            # token_count=get_token_count(doc),
+            token_count=get_token_count_bartpho(doc),
             meta=metadata
         )
         if session:

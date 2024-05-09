@@ -334,7 +334,7 @@ class Node(BaseModel, table=True):
     document_id: int = Field(default=None, foreign_key="document.id")
     uuid: Optional[uuid_pkg.UUID] = Field(unique=True, default_factory=uuid_pkg.uuid4)
     embeddings: Optional[List[float]] = Field(
-        sa_column=Column(Vector(VECTOR_EMBEDDINGS_COUNT))
+        sa_column=Column(Vector(int(VECTOR_EMBEDDINGS_COUNT)))
     )
     meta: Optional[Dict] = Field(default=None, sa_column=Column(JSONB))
     token_count: Optional[int] = Field(default=None)
@@ -448,7 +448,7 @@ class ChatSession(BaseModel, table=True):
     user_message: str = Field(default=None)
     token_count: Optional[int] = Field(default=None)
     embeddings: Optional[List[float]] = Field(
-        sa_column=Column(Vector(VECTOR_EMBEDDINGS_COUNT))
+        sa_column=Column(Vector(int(VECTOR_EMBEDDINGS_COUNT)))
     )
     response: Optional[str] = Field(default=None)
     meta: Optional[Dict] = Field(default=None, sa_column=Column(JSONB))
@@ -629,8 +629,8 @@ def add_vector_distance_fn(session: Session):
         strategy_name = strategy[1]
         strategy_distance_str = strategy[2]
 
-        query = f"""create or replace function match_node_{strategy_name} (
-    query_embeddings vector({VECTOR_EMBEDDINGS_COUNT}),
+        query = f"""create or replace function  {strategy_name} (
+    query_embeddings vector({int(VECTOR_EMBEDDINGS_COUNT)}),
     match_threshold float,
     match_count int
 ) returns table (

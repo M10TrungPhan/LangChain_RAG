@@ -10,3 +10,7 @@ pgvector
 tiktoken
 aiofiles
 sqlmodel
+transformers
+torch
+py_vncorenlp
+sentencepiece 

@@ -1,7 +1,9 @@
 import random
 import openai
 import json
+from transformers import GPT2TokenizerFast
 
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document as LangChainDocument
 from langchain.embeddings.openai import OpenAIEmbeddings
 from fastapi import HTTPException
@@ -57,6 +59,20 @@ from config import (
     logger,
     OPENAI_API_KEY
 )
+
+import torch
+
+import py_vncorenlp
+from transformers import AutoModel, AutoTokenizer
+
+# phobert = AutoModel.from_pretrained("vinai/phobert-base-v2")
+# tokenizer = AutoTokenizer.from_pretrained("vinai/phobert-base-v2")
+
+bartpho = AutoModel.from_pretrained("vinai/bartpho-syllable")
+
+tokenizer_bartpho = AutoTokenizer.from_pretrained("vinai/bartpho-syllable")
+
+# rdrsegmenter = py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir='./models/vncorenlp')
 
 
 # -------------
@@ -136,13 +152,15 @@ def chat_query(
     # ----------------
     # Get token counts
     # ----------------
-    query_token_count = get_token_count(query_str)
+    # query_token_count = get_token_count(query_str)
+    query_token_count = get_token_count_bartpho(query_str)
     prompt_token_count = 0
 
     # -----------------------
     # Create input embeddings
     # -----------------------
-    arr_query, embeddings = get_embeddings(query_str)
+    # arr_query, embeddings = get_embeddings(query_str)
+    arr_query, embeddings = get_embeddings_bert(query_str)
 
     query_embeddings = embeddings[0]
 
@@ -181,7 +199,8 @@ def chat_query(
         # -------------------------------------------
         # Let's make sure we don't exceed token limit
         # -------------------------------------------
-        context_token_count = get_token_count(context_str)
+        # context_token_count = get_token_count(context_str)
+        context_token_count = get_token_count_bartpho(context_str)
 
         # ----------------------------------------------
         # if token count exceeds limit, truncate context
@@ -202,7 +221,9 @@ def chat_query(
             agent=agent_name,
         )
 
-        prompt_token_count = get_token_count(prompt)
+        # prompt_token_count = get_token_count(prompt)
+        prompt_token_count = get_token_count_bartpho(prompt)
+
         token_count = context_token_count + query_token_count + prompt_token_count
 
         # ---------------------------
@@ -255,7 +276,9 @@ def chat_query(
     # -----------------------------------
     # Calculate input and response tokens
     # -----------------------------------
-    token_count = get_token_count(prompt) + get_token_count(response_message)
+    # token_count = get_token_count(prompt) + get_token_count(response_message)
+    token_count = get_token_count_bartpho(prompt) + get_token_count_bartpho(response_message)
+
 
     # ---------------
     # Add to meta tag
@@ -400,7 +423,7 @@ def get_nodes_by_embedding(
             nodes = session.exec(text(sql)).all()
     else:
         nodes = session.exec(text(sql)).all()
-    print(f"444444444444 {[Node.by_uuid(str(node[0])) for node in nodes] if nodes else []}")
+    # print(f"444444444444 {[Node.by_uuid(str(node[0])) for node in nodes] if nodes else []}")
     return [Node.by_uuid(str(node[0])) for node in nodes] if nodes else []
 
 
@@ -449,9 +472,15 @@ def get_embeddings(
             chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         )
     else:
-        doc_splitter = CharacterTextSplitter(separator='\r\n',
-            chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
-        )
+        # doc_splitter = CharacterTextSplitter(separator='\r\n',
+        #     chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
+        # )
+        doc_splitter = RecursiveCharacterTextSplitter(
+                        chunk_size=LLM_CHUNK_SIZE,
+                        chunk_overlap=LLM_CHUNK_OVERLAP,
+                        add_start_index=True,
+                        separators=["\r\n", "\n", ".", " ", ""],
+                    )
 
     # Returns an array of Documents
     split_documents = doc_splitter.split_documents(documents)
@@ -460,12 +489,119 @@ def get_embeddings(
 
     # https://github.com/hwchase17/langchain/blob/d18b0caf0e00414e066c9903c8df72bb5bcf9998/langchain/embeddings/openai.py#L219
     embed_func = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-    # print("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________")
+    # # print("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________")
     
-    # print(embed_func)
-    # print(arr_documents)
+    # # print(embed_func)
+    # # print(arr_documents)
     embeddings = embed_func.embed_documents(
         texts=arr_documents, chunk_size=512
     )
-    
+
+
+    # tokenizer = GPT2TokenizerFast.from_pretrained('Xenova/text-embedding-ada-002')
+    # embeddings = [tokenizer.encode(text=doc) for doc in arr_documents]
     return arr_documents, embeddings
+
+def get_embeddings_bert(
+    document_data: str,
+    document_type: DOCUMENT_TYPE = DOCUMENT_TYPE.PLAINTEXT,
+) -> Tuple[List[str], List[float]]:
+    documents = [LangChainDocument(page_content=document_data)]
+
+    logger.debug(documents)
+    if document_type == DOCUMENT_TYPE.MARKDOWN:
+        doc_splitter = MarkdownTextSplitter(
+            chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
+        )
+    else:
+        # doc_splitter = CharacterTextSplitter(separator='\r\n',
+        #     chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
+        # )
+        doc_splitter = RecursiveCharacterTextSplitter(
+                        chunk_size=LLM_CHUNK_SIZE,
+                        chunk_overlap=LLM_CHUNK_OVERLAP,
+                        add_start_index=True,
+                        separators=["\r\n", "\n", ".", " ", ""],
+                    )
+
+    # Returns an array of Documents
+    split_documents = doc_splitter.split_documents(documents)
+    # Lets convert them into an array of strings for OpenAI
+    arr_documents = [doc.page_content for doc in split_documents]
+
+    # https://github.com/hwchase17/langchain/blob/d18b0caf0e00414e066c9903c8df72bb5bcf9998/langchain/embeddings/openai.py#L219
+
+    
+    output_segment = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
+    output_segment = [each[0] for each in output_segment]
+
+    
+    token_output = torch.tensor(tokenizer(output_segment,padding='max_length', truncation=True, max_length=256)['input_ids'])
+    
+    
+    with torch.no_grad():
+        features = phobert(token_output)
+
+    last_hidden_state, _ = features[0], features[1]
+
+    embeddings = torch.mean(last_hidden_state, dim=1)
+    return arr_documents, embeddings
+
+def get_embeddings_bartpho(
+    document_data: str,
+    document_type: DOCUMENT_TYPE = DOCUMENT_TYPE.PLAINTEXT,
+) -> Tuple[List[str], List[float]]:
+    documents = [LangChainDocument(page_content=document_data)]
+
+    logger.debug(documents)
+    if document_type == DOCUMENT_TYPE.MARKDOWN:
+        doc_splitter = MarkdownTextSplitter(
+            chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
+        )
+    else:
+        # doc_splitter = CharacterTextSplitter(separator='\r\n',
+        #     chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
+        # )
+        doc_splitter = RecursiveCharacterTextSplitter(
+                        chunk_size=LLM_CHUNK_SIZE,
+                        chunk_overlap=LLM_CHUNK_OVERLAP,
+                        add_start_index=True,
+                        separators=["\r\n", "\n", ".", " ", ""],
+                    )
+
+    # Returns an array of Documents
+    split_documents = doc_splitter.split_documents(documents)
+    # Lets convert them into an array of strings for OpenAI
+    arr_documents = [doc.page_content for doc in split_documents]
+
+    # https://github.com/hwchase17/langchain/blob/d18b0caf0e00414e066c9903c8df72bb5bcf9998/langchain/embeddings/openai.py#L219
+
+    
+    # output_segment = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
+    # output_segment = [each[0] for each in output_segment]
+
+    
+    token_output = torch.tensor(tokenizer_bartpho(arr_documents,padding='max_length', truncation=True, max_length=256)['input_ids'])
+    
+    
+    with torch.no_grad():
+        features = bartpho(token_output)
+
+    last_hidden_state, _ = features[0], features[1]
+
+    embeddings = torch.mean(last_hidden_state, dim=1)
+    return arr_documents, embeddings
+
+
+def get_token_count_bert(text: str):
+    if not text:
+        return 0
+    output_segment = rdrsegmenter.word_segment(text)
+    return len(tokenizer.encode(output_segment[0]))
+
+def get_token_count_bartpho(text: str):
+    if not text:
+        return 0
+    # output_segment = rdrsegmenter.word_segment(text)
+    return len(tokenizer_bartpho.encode(text))
+    
