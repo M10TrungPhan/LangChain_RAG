@@ -225,12 +225,12 @@ for org in organizations:
                     try:
 
                         if e.status_code == 409:
-                            print(f"Error 3333333:{e}")
+                            # print(f"Error 3333333:{e}")
 
                             continue
                     except:
                         print(f"Error 3333333:{e}")
-                        time.sleep(120)
+                        # time.sleep(120)
                 # else:
                 #      logger.info(f'  ❌  Document is updated: {doc}')
 

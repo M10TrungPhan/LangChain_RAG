@@ -1,5 +1,5 @@
 import random
-import openai
+# import openai
 import json
 from transformers import GPT2TokenizerFast
 
@@ -49,11 +49,12 @@ from config import (
     LLM_DISTANCE_THRESHOLD,
     LLM_DEFAULT_TEMPERATURE,
     LLM_MAX_OUTPUT_TOKENS,
+    MAX_TOKEN_EMBEDDINGS,
     LLM_CHUNK_SIZE,
     LLM_CHUNK_OVERLAP,
     LLM_MIN_NODE_LIMIT,
     LLM_DEFAULT_DISTANCE_STRATEGY,
-    VECTOR_EMBEDDINGS_COUNT,
+    VECTOR_EMBEDDINGS_DIM,
     DISTANCE_STRATEGY,
     AGENT_NAMES,
     logger,
@@ -61,20 +62,20 @@ from config import (
 )
 
 import torch
-
+import os
 import py_vncorenlp
 from transformers import AutoModel, AutoTokenizer
 
-# phobert = AutoModel.from_pretrained("vinai/phobert-base-v2")
-# tokenizer = AutoTokenizer.from_pretrained("vinai/phobert-base-v2")
+phobert = AutoModel.from_pretrained("vinai/phobert-base-v2")
+tokenizer_phobert = AutoTokenizer.from_pretrained("vinai/phobert-base-v2")
 
-bartpho = AutoModel.from_pretrained("vinai/bartpho-syllable")
+# model_name_or_path = './models/bartpho-word/'
+# bartpho = AutoModel.from_pretrained(model_name_or_path)
+# tokenizer_bartpho = AutoTokenizer.from_pretrained(model_name_or_path)
 
-tokenizer_bartpho = AutoTokenizer.from_pretrained("vinai/bartpho-syllable")
-
-# rdrsegmenter = py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir='./models/vncorenlp')
-
-
+rdrsegmenter = py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir='./models/vncorenlp')
+os.chdir("/app/api")
+print(os.getcwd())
 # -------------
 # Query the LLM
 # -------------
@@ -153,7 +154,9 @@ def chat_query(
     # Get token counts
     # ----------------
     # query_token_count = get_token_count(query_str)
-    query_token_count = get_token_count_bartpho(query_str)
+    query_token_count = get_token_count_bert(query_str)
+    
+    # query_token_count = get_token_count_bartpho(query_str)
     prompt_token_count = 0
 
     # -----------------------
@@ -161,6 +164,7 @@ def chat_query(
     # -----------------------
     # arr_query, embeddings = get_embeddings(query_str)
     arr_query, embeddings = get_embeddings_bert(query_str)
+    # arr_query, embeddings = get_embeddings_bartpho(query_str)
 
     query_embeddings = embeddings[0]
 
@@ -200,7 +204,9 @@ def chat_query(
         # Let's make sure we don't exceed token limit
         # -------------------------------------------
         # context_token_count = get_token_count(context_str)
-        context_token_count = get_token_count_bartpho(context_str)
+        context_token_count = get_token_count_bert(context_str)
+        
+        # context_token_count = get_token_count_bartpho(context_str)
 
         # ----------------------------------------------
         # if token count exceeds limit, truncate context
@@ -222,7 +228,9 @@ def chat_query(
         )
 
         # prompt_token_count = get_token_count(prompt)
-        prompt_token_count = get_token_count_bartpho(prompt)
+        prompt_token_count = get_token_count_bert(prompt)
+        # prompt_token_count = get_token_count_bartpho(prompt)
+        
 
         token_count = context_token_count + query_token_count + prompt_token_count
 
@@ -277,7 +285,9 @@ def chat_query(
     # Calculate input and response tokens
     # -----------------------------------
     # token_count = get_token_count(prompt) + get_token_count(response_message)
-    token_count = get_token_count_bartpho(prompt) + get_token_count_bartpho(response_message)
+    
+    token_count = get_token_count_bert(prompt) + get_token_count_bert(response_message)
+    # token_count = get_token_count_bartpho(prompt) + get_token_count_bartpho(response_message)
 
 
     # ---------------
@@ -411,7 +421,7 @@ def get_nodes_by_embedding(
     # Lets do a similarity search
     # ---------------------------
     sql = f"""SELECT * FROM {distance_fn}(
-    '{embeddings_str}'::vector({VECTOR_EMBEDDINGS_COUNT}),
+    '{embeddings_str}'::vector({VECTOR_EMBEDDINGS_DIM}),
     {float(distance_threshold)}::double precision,
     {int(k)});"""
 
@@ -532,19 +542,34 @@ def get_embeddings_bert(
     # https://github.com/hwchase17/langchain/blob/d18b0caf0e00414e066c9903c8df72bb5bcf9998/langchain/embeddings/openai.py#L219
 
     
-    output_segment = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
-    output_segment = [each[0] for each in output_segment]
+    output_segment_doc = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
+    # output_segment = [each[0] for each in output_segment]
 
-    
-    token_output = torch.tensor(tokenizer(output_segment,padding='max_length', truncation=True, max_length=256)['input_ids'])
-    
+    total_segment_doc = []
+    for list_segment_in_doc in output_segment_doc:
+        segment_doc = ""
+        for each in list_segment_in_doc:
+            segment_doc += each + " "
+        total_segment_doc.append(segment_doc.strip())
+
+    encoding_doc = tokenizer_phobert(total_segment_doc,padding='max_length',return_tensors='pt', truncation=True, max_length=int(MAX_TOKEN_EMBEDDINGS))
+    input_ids_doc = encoding_doc['input_ids']
+    attention_mask_doc = encoding_doc['attention_mask'] 
     
     with torch.no_grad():
-        features = phobert(token_output)
+        features = phobert(input_ids_doc,attention_mask=attention_mask_doc)
 
     last_hidden_state, _ = features[0], features[1]
 
-    embeddings = torch.mean(last_hidden_state, dim=1)
+    embeddings = last_hidden_state.mean(dim=1)
+    print(arr_documents) 
+    print(len(arr_documents))
+    print(total_segment_doc)
+    print(len(arr_documents))
+    print(embeddings)
+    print(embeddings.shape)
+
+    print("__________________________________________________________________________________________")
     return arr_documents, embeddings
 
 def get_embeddings_bartpho(
@@ -574,34 +599,70 @@ def get_embeddings_bartpho(
     # Lets convert them into an array of strings for OpenAI
     arr_documents = [doc.page_content for doc in split_documents]
 
+    output_segment_doc = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
+
+    total_segment_doc = []
+    for list_segment_in_doc in output_segment_doc:
+        segment_doc = ""
+        for each in list_segment_in_doc:
+            segment_doc += each + " "
+        total_segment_doc.append(segment_doc.strip())
+
+    encoding_doc = tokenizer_bartpho(total_segment_doc,padding='max_length',return_tensors='pt', truncation=True, max_length=int(MAX_TOKEN_EMBEDDINGS))
+    input_ids_doc = encoding_doc['input_ids']
+    attention_mask_doc = encoding_doc['attention_mask'] 
+    
+    with torch.no_grad():
+        features = bartpho(input_ids_doc,attention_mask=attention_mask_doc)
+
+    last_hidden_state, _ = features[0], features[1]
+
+    embeddings = last_hidden_state.mean(dim=1)
+    print(arr_documents) 
+    print(len(arr_documents))
+    print(total_segment_doc)
+    print(len(arr_documents))
+    print(embeddings)
+    print(embeddings.shape)
     # https://github.com/hwchase17/langchain/blob/d18b0caf0e00414e066c9903c8df72bb5bcf9998/langchain/embeddings/openai.py#L219
 
     
     # output_segment = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
     # output_segment = [each[0] for each in output_segment]
 
-    
-    token_output = torch.tensor(tokenizer_bartpho(arr_documents,padding='max_length', truncation=True, max_length=256)['input_ids'])
-    
-    
-    with torch.no_grad():
-        features = bartpho(token_output)
 
-    last_hidden_state, _ = features[0], features[1]
+    # encoding = tokenizer_bartpho(arr_documents,padding='max_length',return_tensors='pt', truncation=True, max_length=int(MAX_TOKEN_EMBEDDINGS))
+    # input_ids = encoding['input_ids']
+    # attention_mask = encoding['attention_mask'] 
 
-    embeddings = torch.mean(last_hidden_state, dim=1)
+    # with torch.no_grad():
+    #     features = bartpho(input_ids, attention_mask=attention_mask)
+
+    # last_hidden_state, _ = features[0], features[1]
+
+    # embeddings = last_hidden_state.mean(dim=1)
+
     return arr_documents, embeddings
 
 
 def get_token_count_bert(text: str):
     if not text:
         return 0
+    total_text = ""
     output_segment = rdrsegmenter.word_segment(text)
-    return len(tokenizer.encode(output_segment[0]))
+    for segment in output_segment:
+        total_text += segment + " "
+    total_text = total_text.strip()
+    return len(tokenizer_phobert.encode(total_text))
 
 def get_token_count_bartpho(text: str):
     if not text:
         return 0
+    total_text = ""
+    output_segment = rdrsegmenter.word_segment(text)
+    for segment in output_segment:
+        total_text += segment + " "
+    total_text = total_text.strip()
     # output_segment = rdrsegmenter.word_segment(text)
-    return len(tokenizer_bartpho.encode(text))
+    return len(tokenizer_bartpho.encode(total_text))
     

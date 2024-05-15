@@ -26,7 +26,7 @@ from typing import (
 )
 from config import (
     LLM_DEFAULT_DISTANCE_STRATEGY,
-    VECTOR_EMBEDDINGS_COUNT,
+    VECTOR_EMBEDDINGS_DIM,
     LLM_MAX_OUTPUT_TOKENS,
     DISTANCE_STRATEGIES,
     LLM_MIN_NODE_LIMIT,
@@ -334,7 +334,7 @@ class Node(BaseModel, table=True):
     document_id: int = Field(default=None, foreign_key="document.id")
     uuid: Optional[uuid_pkg.UUID] = Field(unique=True, default_factory=uuid_pkg.uuid4)
     embeddings: Optional[List[float]] = Field(
-        sa_column=Column(Vector(int(VECTOR_EMBEDDINGS_COUNT)))
+        sa_column=Column(Vector(int(VECTOR_EMBEDDINGS_DIM)))
     )
     meta: Optional[Dict] = Field(default=None, sa_column=Column(JSONB))
     token_count: Optional[int] = Field(default=None)
@@ -448,7 +448,7 @@ class ChatSession(BaseModel, table=True):
     user_message: str = Field(default=None)
     token_count: Optional[int] = Field(default=None)
     embeddings: Optional[List[float]] = Field(
-        sa_column=Column(Vector(int(VECTOR_EMBEDDINGS_COUNT)))
+        sa_column=Column(Vector(int(VECTOR_EMBEDDINGS_DIM)))
     )
     response: Optional[str] = Field(default=None)
     meta: Optional[Dict] = Field(default=None, sa_column=Column(JSONB))
@@ -621,6 +621,7 @@ def enable_vector():
     session.execute(text(query))
     session.commit()
     add_vector_distance_fn(session)
+    add_vector_distance_fn_2(session)
     session.close()
 
 
@@ -629,8 +630,8 @@ def add_vector_distance_fn(session: Session):
         strategy_name = strategy[1]
         strategy_distance_str = strategy[2]
 
-        query = f"""create or replace function  {strategy_name} (
-    query_embeddings vector({int(VECTOR_EMBEDDINGS_COUNT)}),
+        query = f"""create or replace function  match_node_{strategy_name} (
+    query_embeddings vector({int(VECTOR_EMBEDDINGS_DIM)}),
     match_threshold float,
     match_count int
 ) returns table (
@@ -652,7 +653,38 @@ begin
         limit match_count;
 end;
 $$;"""
+        session.execute(text(query))
+        session.commit()
+    session.close()
 
+
+def add_vector_distance_fn_2(session: Session):
+    for strategy in DISTANCE_STRATEGIES:
+        strategy_name = strategy[1]
+        strategy_distance_str = strategy[2]
+
+        query = f"""create or replace function  match_node_{strategy_name}_2 (
+    query_embeddings vector({int(VECTOR_EMBEDDINGS_DIM)}),
+    match_threshold float,
+    match_count int
+) returns table (
+    uuid uuid,
+    text varchar,
+    similarity float
+)
+language plpgsql
+as $$
+begin
+    return query
+    select
+        node.uuid,
+        node.text,
+        node.embeddings {strategy_distance_str} query_embeddings as similarity
+    from node
+        order by similarity asc
+        limit match_count;
+end;
+$$;"""
         session.execute(text(query))
         session.commit()
     session.close()

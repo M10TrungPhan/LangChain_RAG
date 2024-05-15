@@ -379,19 +379,21 @@ def create_document_nodes(
 
     # lets get the embeddings
     # arr_documents, embeddings = get_embeddings(document_data)
-    # arr_documents, embeddings = get_embeddings_bert(document_data)
-    arr_documents, embeddings = get_embeddings_bartpho(document_data)
+    arr_documents, embeddings = get_embeddings_bert(document_data)
+    # arr_documents, embeddings = get_embeddings_bartpho(document_data)
     # -------------------------------------------
     # Process the embeddings and save to database
     # -------------------------------------------
 
     for doc, vec in zip(arr_documents, embeddings):
+        # print("________________________________________________________________________________")
         node = Node(
             document_id=document.id,
             embeddings=vec,
             text=doc,
             # token_count=get_token_count(doc),
-            token_count=get_token_count_bartpho(doc),
+            token_count=get_token_count_bert(doc),
+            # token_count=get_token_count_bartpho(doc),
             meta=metadata
         )
         if session:

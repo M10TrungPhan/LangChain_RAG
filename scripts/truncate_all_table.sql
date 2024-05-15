@@ -14,3 +14,4 @@ drop  table  public.chat_session cascade;
 
 
 -- delete  from public.document where id not in (select distinct(document_id) from node);
+
