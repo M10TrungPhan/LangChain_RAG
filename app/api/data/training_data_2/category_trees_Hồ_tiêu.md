@@ -1,0 +1,3 @@
+Hồ tiêu
+**Hồ tiêu** còn gọi là **tiêu ăn**, **cổ nguyệt**, **hắc cổ nguyệt**, **bạch cổ nguyệt** (danh pháp khoa học: *Piper nigrum*) là một loài [cây leo](https://vi.wikipedia.org/w/index.php?title=C%C3%A2y_leo&action=edit&redlink=1) [có hoa](https://vi.wikipedia.org/w/index.php?title=Th%E1%BB%A5_v%E1%BA%ADt_c%C3%B3_hoa&action=edit&redlink=1) thuộc [họ Hồ tiêu](https://vi.wikipedia.org/wiki/H%E1%BB%8D_H%E1%BB%93_ti%C3%AAu) (*Piperaceae*), trồng chủ yếu để lấy [quả](https://vi.wikipedia.org/wiki/Qu%E1%BA%A3) và hạt, thường dùng làm [gia vị](https://vi.wikipedia.org/wiki/Gia_v%E1%BB%8B) dưới dạng khô hoặc tươi.
+

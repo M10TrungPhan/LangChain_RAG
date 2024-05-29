@@ -11,8 +11,12 @@ venv/
 .env-prod
 .env-production
 __pycache__/
-scripts/evaluat*
+# scripts/evaluat*.csv
+# scripts/evaluat*.xlsx
 scripts/result_evaluate*
 scripts/models/
-app/api/models/
+app/api/models/*
 scripts/bartpho-word
+
+scripts/evaluate/embeddings_models/*
+scripts/evaluate/generated_questions_model/*

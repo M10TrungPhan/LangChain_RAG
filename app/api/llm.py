@@ -65,17 +65,21 @@ import torch
 import os
 import py_vncorenlp
 from transformers import AutoModel, AutoTokenizer
+import os 
 
-phobert = AutoModel.from_pretrained("vinai/phobert-base-v2")
-tokenizer_phobert = AutoTokenizer.from_pretrained("vinai/phobert-base-v2")
 
-# model_name_or_path = './models/bartpho-word/'
+
+model_name_or_path = "/app/api/models/phobert-base-v2"
+phobert = AutoModel.from_pretrained(model_name_or_path)
+tokenizer_phobert = AutoTokenizer.from_pretrained(model_name_or_path)
+
+# model_name_or_path = '/app/api/models/bartpho-word/'
 # bartpho = AutoModel.from_pretrained(model_name_or_path)
 # tokenizer_bartpho = AutoTokenizer.from_pretrained(model_name_or_path)
 
-rdrsegmenter = py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir='./models/vncorenlp')
+rdrsegmenter = py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir='/app/api/models/vncorenlp')
 os.chdir("/app/api")
-print(os.getcwd())
+
 # -------------
 # Query the LLM
 # -------------
@@ -163,8 +167,8 @@ def chat_query(
     # Create input embeddings
     # -----------------------
     # arr_query, embeddings = get_embeddings(query_str)
-    arr_query, embeddings = get_embeddings_bert(query_str)
-    # arr_query, embeddings = get_embeddings_bartpho(query_str)
+    # arr_query, embeddings = get_embeddings_bert(query_str)
+    arr_query, embeddings = get_embeddings_bartpho(query_str)
 
     query_embeddings = embeddings[0]
 
@@ -391,7 +395,6 @@ I will answer the user's questions using only the [DOCUMENT] provided. I will ab
 def get_token_count(text: str):
     if not text:
         return 0
-
     return OpenAI().get_num_tokens(text=text)
 
 
@@ -433,7 +436,6 @@ def get_nodes_by_embedding(
             nodes = session.exec(text(sql)).all()
     else:
         nodes = session.exec(text(sql)).all()
-    # print(f"444444444444 {[Node.by_uuid(str(node[0])) for node in nodes] if nodes else []}")
     return [Node.by_uuid(str(node[0])) for node in nodes] if nodes else []
 
 
@@ -482,14 +484,14 @@ def get_embeddings(
             chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         )
     else:
-        # doc_splitter = CharacterTextSplitter(separator='\r\n',
+        # doc_splitter = CharacterTextSplitter(separator='\n',
         #     chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         # )
         doc_splitter = RecursiveCharacterTextSplitter(
                         chunk_size=LLM_CHUNK_SIZE,
                         chunk_overlap=LLM_CHUNK_OVERLAP,
                         add_start_index=True,
-                        separators=["\r\n", "\n", ".", " ", ""],
+                        separators=["\n", "\n", ".", " ", ""],
                     )
 
     # Returns an array of Documents
@@ -524,14 +526,14 @@ def get_embeddings_bert(
             chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         )
     else:
-        # doc_splitter = CharacterTextSplitter(separator='\r\n',
+        # doc_splitter = CharacterTextSplitter(separator='\n',
         #     chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         # )
         doc_splitter = RecursiveCharacterTextSplitter(
                         chunk_size=LLM_CHUNK_SIZE,
                         chunk_overlap=LLM_CHUNK_OVERLAP,
                         add_start_index=True,
-                        separators=["\r\n", "\n", ".", " ", ""],
+                        separators=["\n\n", "\n", ".", " ", ""],
                     )
 
     # Returns an array of Documents
@@ -562,14 +564,6 @@ def get_embeddings_bert(
     last_hidden_state, _ = features[0], features[1]
 
     embeddings = last_hidden_state.mean(dim=1)
-    print(arr_documents) 
-    print(len(arr_documents))
-    print(total_segment_doc)
-    print(len(arr_documents))
-    print(embeddings)
-    print(embeddings.shape)
-
-    print("__________________________________________________________________________________________")
     return arr_documents, embeddings
 
 def get_embeddings_bartpho(
@@ -584,14 +578,14 @@ def get_embeddings_bartpho(
             chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         )
     else:
-        # doc_splitter = CharacterTextSplitter(separator='\r\n',
+        # doc_splitter = CharacterTextSplitter(separator='\n',
         #     chunk_size=LLM_CHUNK_SIZE, chunk_overlap=LLM_CHUNK_OVERLAP
         # )
         doc_splitter = RecursiveCharacterTextSplitter(
                         chunk_size=LLM_CHUNK_SIZE,
                         chunk_overlap=LLM_CHUNK_OVERLAP,
                         add_start_index=True,
-                        separators=["\r\n", "\n", ".", " ", ""],
+                        separators=["\n\n\n", "\n\n", "\n", "."],
                     )
 
     # Returns an array of Documents
@@ -624,24 +618,6 @@ def get_embeddings_bartpho(
     print(len(arr_documents))
     print(embeddings)
     print(embeddings.shape)
-    # https://github.com/hwchase17/langchain/blob/d18b0caf0e00414e066c9903c8df72bb5bcf9998/langchain/embeddings/openai.py#L219
-
-    
-    # output_segment = [rdrsegmenter.word_segment(doc) for doc in arr_documents]
-    # output_segment = [each[0] for each in output_segment]
-
-
-    # encoding = tokenizer_bartpho(arr_documents,padding='max_length',return_tensors='pt', truncation=True, max_length=int(MAX_TOKEN_EMBEDDINGS))
-    # input_ids = encoding['input_ids']
-    # attention_mask = encoding['attention_mask'] 
-
-    # with torch.no_grad():
-    #     features = bartpho(input_ids, attention_mask=attention_mask)
-
-    # last_hidden_state, _ = features[0], features[1]
-
-    # embeddings = last_hidden_state.mean(dim=1)
-
     return arr_documents, embeddings
 
 

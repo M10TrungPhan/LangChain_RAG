@@ -77,6 +77,7 @@ DSN = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 SU_DSN = (
     f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
+# SU_DSN=('postgresql://postgres:postgres@192.168.1.76:5132/api')
 
 RASA_WEBHOOK_HOST = os.getenv("RASA_WEBHOOK_HOST", "rasa-core")
 RASA_WEBHOOK_PORT = os.getenv("RASA_WEBHOOK_PORT", 5005)
